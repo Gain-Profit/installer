@@ -22,7 +22,7 @@ DefaultDirName=C:\GP_Database
 DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=GPDb_setup_mini
+OutputBaseFilename=GPDB_setup
 Compression=lzma
 SolidCompression=yes
 
@@ -46,9 +46,9 @@ Type: files; Name: "{app}\my.ini"
 Type: files; Name: "{app}\README"
 
 [Files]
-Source: "BAHAN\7za.exe"; DestDir: "{tmp}";
-Source: "BAHAN\MySQL\_source\initdb.bat"; DestDir: "{tmp}"; DestName: "UTjh987lOHi56.bat";
-Source: "BAHAN\MySQL\_source\initdb.sql"; DestDir: "{tmp}"; DestName: "lRTlku9KyT795.dat";
+Source: "bahan\7za.exe"; DestDir: "{tmp}";
+Source: "bahan\initdb.bat"; DestDir: "{tmp}"; DestName: "UTjh987lOHi56.bat";
+Source: "bahan\initdb.sql"; DestDir: "{tmp}"; DestName: "lRTlku9KyT795.dat";
 
 [Run]
 Filename: "{tmp}\7za.exe"; Parameters: "x ""{src}\server.7z"" -o""{app}\"" * -r -aoa"; WorkingDir: "{app}"; Flags: runhidden; Description: "Extract server.7z"; StatusMsg: "Sedang Extraksi File server.7z"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
