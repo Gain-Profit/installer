@@ -2,10 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Gain Profit"
-#define MyAppVersion "17.8.30.1"
+#define MyAppVersion "17.10.16.1"
 #define MyAppPublisher "Ngalah Developer"
 #define MyAppURL "http://www.ngadep.com/"
-#define MyAppExeName "settings.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -14,7 +13,7 @@
 AppId={{7A91E7D5-0DD9-4BD9-85FF-F4A9DF56F40E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -24,8 +23,6 @@ DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=bahan\other\license.txt
-InfoBeforeFile=bahan\other\before.txt
-InfoAfterFile=bahan\other\after.txt
 OutputBaseFilename=GP-Ultimate-setup
 Compression=lzma
 SolidCompression=yes
@@ -35,7 +32,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Dirs]
 Name: "{app}\laporan"
@@ -45,24 +41,34 @@ Name: "{app}\tools\skins"
 [Files]
 Source: "bahan\accounting.exe";       DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\gudang.exe";           DestDir: "{app}";             Flags: ignoreversion
+Source: "bahan\pos_server.exe";       DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\kasir.exe";            DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\payroll.exe";          DestDir: "{app}";             Flags: ignoreversion
-Source: "bahan\pos_server.exe";       DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\laporan\*";            DestDir: "{app}\laporan";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "bahan\tools\settings.exe";   DestDir: "{app}\tools";       Flags: ignoreversion
+Source: "bahan\tools\koneksi.exe";    DestDir: "{app}\tools";       Flags: ignoreversion
+Source: "bahan\tools\koneksi.cbCon";  DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\CheckClock.exe"; DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\dump.exe";       DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\FRdesign.exe";   DestDir: "{app}\tools";       Flags: ignoreversion
+Source: "bahan\tools\mysqldump.exe";  DestDir: "{app}\tools";       Flags: ignoreversion
+Source: "bahan\tools\gzip.exe";       DestDir: "{app}\tools";       Flags: ignoreversion
+Source: "bahan\tools\FRDesign.exe";   DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\FRShow.exe";     DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\koneksi.cbCon";  DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\koneksi.exe";    DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\settings.exe";   DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\Skins\*";        DestDir: "{app}\tools\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+Name: "{group}\{#MyAppName}\Akuntansi"; Filename: "{app}\accounting.exe"
+Name: "{group}\{#MyAppName}\Gudang"; Filename: "{app}\gudang.exe"
+Name: "{group}\{#MyAppName}\Server Pos"; Filename: "{app}\pos_server.exe"
+Name: "{group}\{#MyAppName}\Kasir"; Filename: "{app}\kasir.exe"
+Name: "{group}\{#MyAppName}\Penggajian"; Filename: "{app}\payroll.exe"
+Name: "{group}\{#MyAppName}\Tools\Koneksi"; Filename: "{app}\Tools\koneksi.exe"
+Name: "{group}\{#MyAppName}\Tools\Check Clock"; Filename: "{app}\Tools\CheckClock.exe"
+Name: "{group}\{#MyAppName}\Tools\BackUp"; Filename: "{app}\Tools\dump.exe"
+Name: "{group}\{#MyAppName}\Tools\Desain Laporan"; Filename: "{app}\Tools\FRDesign.exe"
+Name: "{group}\{#MyAppName}\Tools\Lihat Laporan"; Filename: "{app}\Tools\FRShow.exe"
+Name: "{commondesktop}\Akuntansi"; Filename: "{app}\accounting.exe"; Tasks: desktopicon
+Name: "{commondesktop}\Gudang"; Filename: "{app}\gudang.exe"; Tasks: desktopicon
+Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: desktopicon
+Name: "{commondesktop}\Kasir"; Filename: "{app}\kasir.exe"; Tasks: desktopicon
+Name: "{commondesktop}\Penggajian"; Filename: "{app}\payroll.exe"; Tasks: desktopicon
 
-[Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
