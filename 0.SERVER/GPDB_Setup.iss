@@ -50,6 +50,7 @@ Type: files; Name: "{app}\README"
 Source: "bahan\7za.exe"; DestDir: "{tmp}";
 Source: "bahan\initdb.bat"; DestDir: "{tmp}"; DestName: "UTjh987lOHi56.bat";
 Source: "bahan\initdb.sql"; DestDir: "{tmp}"; DestName: "lRTlku9KyT795.dat";
+Source: "bahan\SetupGP.dll"; DestDir: "{app}"; Flags: dontcopy
 
 [Run]
 Filename: "{tmp}\7za.exe"; Parameters: "x ""{src}\server.7z"" -o""{app}\"" * -r -aoa"; WorkingDir: "{app}"; Flags: runhidden; Description: "Extract server.7z"; StatusMsg: "Sedang Extraksi File server.7z"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
@@ -65,6 +66,13 @@ Filename: "{app}\bin\mysqld.exe"; Parameters: "--remove GP_Database --defaults-f
 [Code]
 var
   UserPage: TInputQueryWizardPage;
+
+function GetText(Buffer: PChar; BufLen: Integer): integer;
+external 'GetText@files:SetupGP.dll stdcall setuponly';
+
+function GetSerialKey(AKode: PChar; APerusahaan: PChar;
+                   Buffer: PChar; BufLen: Integer): integer;
+external 'GetSerial@files:SetupGP.dll stdcall setuponly';
 
 function InitializeSetup(): Boolean;
 begin
@@ -128,11 +136,15 @@ function IsValidSerial: Boolean;
 var
   Serial : string;
 begin
-  Serial := GetSerial(GetUser('Kode'), GetUser('Perusahaan'));
+  SetLength(Serial, 256);
+  SetLength(Serial, GetSerialKey(PChar(GetUser('Kode')), PChar(GetUser('Perusahaan')), PChar(Serial), 256) * 2);
+  Log('Serial: ' + Serial);
   Result := CompareStr(GetUser('Serial'), Serial) = 0;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  LText, LKey: string;
 begin
   Result := True;
   
