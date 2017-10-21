@@ -14,12 +14,13 @@ uses
   System.SysUtils,
   System.Classes,
   System.JSON,
+  System.Hash,
   Data.DB,
   MyAccess;
 
 {$R *.res}
 
-function GetValue(ACon: PChar; ASql: PChar):PChar;
+function GetValue(ACon: PChar; ASql: PChar):PChar; stdcall;
 var
   LConnection : TMyConnection;
   LQuery: TMyQUery;
@@ -71,7 +72,7 @@ begin
   Result := LResult;
 end;
 
-function SetValue(ACon: PChar; ASql: PChar):PChar;
+function SetValue(ACon: PChar; ASql: PChar):PChar; stdcall;
 var
   LConnection : TMyConnection;
   LQuery: TMyQUery;
@@ -100,8 +101,26 @@ begin
   Result := LResult;
 end;
 
+function GetSerial(AKode: PChar; APerusahaan: PChar): PChar; stdcall;
+var
+  LSerial : string;
+  Str1, Str2, Str3, Str4, Str5: string;
+begin
+  LSerial := THashSHA1.GetHashString('GAIN' + AKode + APerusahaan + 'PROFIT');
+  Str1 := Copy(LSerial, 34, 5);
+  Str2 := Copy(LSerial, 8, 6);
+  Str3 := Copy(LSerial, 25, 3);
+  Str4 := Copy(LSerial, 12, 4);
+  Str5 := Copy(LSerial, 2, 5);
+
+  LSerial := Format('%s-%s-%s-%s-%s', [Str1, Str2, Str3, Str4, Str5]);
+  Result := PChar(UpperCase(LSerial));
+end;
+
 exports GetValue;
 exports SetValue;
+exports GetSerial;
 
 begin
+
 end.
