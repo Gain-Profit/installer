@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "GP Database"
-#define MyAppVersion "3.0.1"
+#define MyAppVersion "3.0.2"
 #define MyAppPublisher "Ngalah Developer"
 #define MyAppURL "http://www.ngadep.com/"
 
@@ -13,7 +13,7 @@
 AppId={{C909EEEE-992E-447A-9709-943E63D9973A}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -22,6 +22,7 @@ DefaultDirName=C:\GP_Database
 DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+LicenseFile=bahan\license.txt
 OutputBaseFilename=GPDB_setup
 Compression=lzma
 SolidCompression=yes
