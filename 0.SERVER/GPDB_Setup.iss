@@ -50,6 +50,7 @@ Type: files; Name: "{app}\README"
 Source: "bahan\7za.exe"; DestDir: "{tmp}";
 Source: "bahan\initdb.bat"; DestDir: "{tmp}"; DestName: "UTjh987lOHi56.bat";
 Source: "bahan\initdb.sql"; DestDir: "{tmp}"; DestName: "lRTlku9KyT795.dat";
+Source: "bahan\SetupGP.dll"; DestDir: "{app}"; Flags: dontcopy
 
 [Run]
 Filename: "{tmp}\7za.exe"; Parameters: "x ""{src}\server.7z"" -o""{app}\"" * -r -aoa"; WorkingDir: "{app}"; Flags: runhidden; Description: "Extract server.7z"; StatusMsg: "Sedang Extraksi File server.7z"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
@@ -63,6 +64,12 @@ Filename: "net.exe"; Parameters: "stop GP_Database"; WorkingDir: "{app}"; Flags:
 Filename: "{app}\bin\mysqld.exe"; Parameters: "--remove GP_Database --defaults-file={app}\my.ini"; WorkingDir: "{app}"; Flags: runhidden
 
 [Code]
+var
+  UserPage: TInputQueryWizardPage;
+
+function GetSerialKey(AKode: PChar; APerusahaan: PChar): PChar;
+external 'GetSerial@files:SetupGP.dll stdcall setuponly';
+
 function InitializeSetup(): Boolean;
 begin
   Result := True;
@@ -71,6 +78,60 @@ begin
    MsgBox('Tidak Bisa Melakukan Installasi, File "server.7z" Tidak Ditemukan', mbError, MB_OK);
    Result := False;
   End;
+end;
+
+procedure InitializeWizard;
+begin
+  UserPage := CreateInputQueryPage(wpWelcome,
+    'Info Perusahaan', 'Info Perusahaan',
+    'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
+  UserPage.Add('Kode Perusahaan:', False);
+  UserPage.Add('Perusahaan:', False);
+  UserPage.Add('Kode Serial:', False);
+
+  UserPage.Values[0] := GetPreviousData('Kode', '');
+  UserPage.Values[1] := GetPreviousData('Perusahaan', '');
+  UserPage.Values[2] := GetPreviousData('Serial', '');
+end;
+
+procedure RegisterPreviousData(PreviousDataKey: Integer);
+begin
+  { Store the settings so we can restore them next time }
+  SetPreviousData(PreviousDataKey, 'Kode', UserPage.Values[0]);
+  SetPreviousData(PreviousDataKey, 'Perusahaan', UserPage.Values[1]);
+  SetPreviousData(PreviousDataKey, 'Serial', UserPage.Values[2]);
+end;
+
+function GetUser(Param: String): String;
+begin
+  if Param = 'Kode' then
+    Result := UserPage.Values[0]
+  else if Param = 'Perusahaan' then
+    Result := UserPage.Values[1]
+  else if Param = 'Serial' then
+    Result := UserPage.Values[2];
+end;
+
+function IsValidSerial: Boolean;
+var
+  Serial : string;
+begin
+  Serial := GetSerialKey(PChar(GetUser('Kode')), PChar(GetUser('Perusahaan')));
+  Result := CompareStr(GetUser('Serial'), Serial) = 0;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  
+  if CurPageID = UserPage.ID then
+  begin
+    UserPage.Values[2] := GetSerialKey(PChar(GetUser('Kode')), PChar(GetUser('Perusahaan')));
+    Result := False;
+    //Result := IsValidSerial;
+    //if not Result then
+      //MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
+  end;
 end;
 
 procedure UpdateProgress(Position: Integer);
