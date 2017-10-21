@@ -117,9 +117,20 @@ begin
   Result := PChar(UpperCase(LSerial));
 end;
 
+function GetText(Buffer: PChar; BufLen: Integer): integer; stdcall;
+var
+  S: String;
+begin
+  S:= 'Aku Cinta Pascal';
+  Result:= Length(S);
+  if (Buffer <> nil) and (Result > 0) then
+    Move(S[1], Buffer^, Result * SizeOf(Char));
+end;
+
 exports GetValue;
 exports SetValue;
 exports GetSerial;
+exports GetText;
 
 begin
 
