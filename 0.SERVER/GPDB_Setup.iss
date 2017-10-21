@@ -50,7 +50,6 @@ Type: files; Name: "{app}\README"
 Source: "bahan\7za.exe"; DestDir: "{tmp}";
 Source: "bahan\initdb.bat"; DestDir: "{tmp}"; DestName: "UTjh987lOHi56.bat";
 Source: "bahan\initdb.sql"; DestDir: "{tmp}"; DestName: "lRTlku9KyT795.dat";
-Source: "bahan\SetupGP.dll"; DestDir: "{app}"; Flags: dontcopy
 
 [Run]
 Filename: "{tmp}\7za.exe"; Parameters: "x ""{src}\server.7z"" -o""{app}\"" * -r -aoa"; WorkingDir: "{app}"; Flags: runhidden; Description: "Extract server.7z"; StatusMsg: "Sedang Extraksi File server.7z"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
@@ -66,9 +65,6 @@ Filename: "{app}\bin\mysqld.exe"; Parameters: "--remove GP_Database --defaults-f
 [Code]
 var
   UserPage: TInputQueryWizardPage;
-
-function GetSerialKey(AKode: PChar; APerusahaan: PChar): PChar;
-external 'GetSerial@files:SetupGP.dll stdcall setuponly';
 
 function InitializeSetup(): Boolean;
 begin
@@ -112,11 +108,27 @@ begin
     Result := UserPage.Values[2];
 end;
 
+function GetSerial(AKode: string; APerusahaan: string): string;
+var
+  LSerial : string;
+  Str1, Str2, Str3, Str4, Str5: string;
+begin
+  LSerial := GetSHA1OfString('GAIN' + AKode + APerusahaan + 'PROFIT');
+  Str1 := Copy(LSerial, 34, 5);
+  Str2 := Copy(LSerial, 8, 6);
+  Str3 := Copy(LSerial, 25, 3);
+  Str4 := Copy(LSerial, 12, 4);
+  Str5 := Copy(LSerial, 2, 5);
+
+  LSerial := Format('%s-%s-%s-%s-%s', [Str1, Str2, Str3, Str4, Str5]);
+  Result := UpperCase(LSerial);
+end;
+
 function IsValidSerial: Boolean;
 var
   Serial : string;
 begin
-  Serial := GetSerialKey(PChar(GetUser('Kode')), PChar(GetUser('Perusahaan')));
+  Serial := GetSerial(GetUser('Kode'), GetUser('Perusahaan'));
   Result := CompareStr(GetUser('Serial'), Serial) = 0;
 end;
 
@@ -126,11 +138,9 @@ begin
   
   if CurPageID = UserPage.ID then
   begin
-    UserPage.Values[2] := GetSerialKey(PChar(GetUser('Kode')), PChar(GetUser('Perusahaan')));
-    Result := False;
-    //Result := IsValidSerial;
-    //if not Result then
-      //MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
+    Result := IsValidSerial;
+    if not Result then
+      MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
   end;
 end;
 
