@@ -131,12 +131,7 @@ begin
   SetLength(Serial, GetText('{"param0": "3", "param1": "'+ GetUser('Kode') 
         +'", "param2": "' + GetUser('Perusahaan') + '"}', Serial, 255));
  
-  Log('Serial1: "' + Serial + '"');
-  Log('Length Serial1: "' + IntToStr(Length(Serial)) + '"');
-
-  Log('Serial2: "' + GetUser('Serial') + '"');
-  Log('Length Serial2: "' + IntToStr(Length(GetUser('Serial'))) + '"');
-
+  Log('Serial: "' + Serial + '"');
   Result := CompareStr(Serial, GetUser('Serial')) = 0;
 end;
 
