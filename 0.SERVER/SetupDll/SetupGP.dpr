@@ -20,11 +20,11 @@ uses
 
 {$R *.res}
 
-function GetValue(ACon: PChar; ASql: PChar):PChar; stdcall;
+function GetValue(ACon: string; ASql: string): string;
 var
   LConnection : TMyConnection;
   LQuery: TMyQUery;
-  LResult: PChar;
+  LResult: string;
   LRoot, LData: TJSONObject;
   LArray: TJSONArray;
   LCol, Lrow: Integer;
@@ -59,10 +59,10 @@ begin
 
       LRoot.AddPair('data', LArray);
 
-      LREsult:= PChar(LRoot.ToString);
+      LResult := LRoot.ToString;
       LRoot.Free;
     except on E: Exception do
-      LREsult:= PChar('{"status": "0", "error": "' + E.Message +'"}');
+      LREsult:= '{"status": "0", "error": "' + E.Message +'"}';
     end;
 
   finally
@@ -72,11 +72,11 @@ begin
   Result := LResult;
 end;
 
-function SetValue(ACon: PChar; ASql: PChar):PChar; stdcall;
+function SetValue(ACon: string; ASql: string): string;
 var
   LConnection : TMyConnection;
   LQuery: TMyQUery;
-  LResult: PChar;
+  LResult: string;
 begin
   LConnection := TMyConnection.Create(nil);
   try
@@ -88,10 +88,10 @@ begin
 
     try
       LQuery.ExecSQL;
-      LREsult:= PChar('{"status": "1", "data": "success"}');
+      LREsult:= '{"status": "1", "data": "success"}';
 
     except on E: Exception do
-      LREsult:= PChar('{"status": "0", "error": "' + E.Message +'"}');
+      LREsult:= '{"status": "0", "error": "' + E.Message +'"}';
     end;
 
   finally
@@ -101,7 +101,7 @@ begin
   Result := LResult;
 end;
 
-function GetSerial(AKode: PChar; APerusahaan: PChar): PChar; stdcall;
+function GetSerial(AKode: string; APerusahaan: string): string;
 var
   LSerial : string;
   Str1, Str2, Str3, Str4, Str5: string;
@@ -114,22 +114,46 @@ begin
   Str5 := Copy(LSerial, 2, 5);
 
   LSerial := Format('%s-%s-%s-%s-%s', [Str1, Str2, Str3, Str4, Str5]);
-  Result := PChar(UpperCase(LSerial));
+  Result := UpperCase(LSerial);
 end;
 
-function GetText(Buffer: PChar; BufLen: Integer): integer; stdcall;
+function GetText(AInput: PAnsiChar; Buffer: PChar; BufLen: Integer): integer; stdcall;
 var
-  S: String;
+  LResult: String;
+  LJsonValue : TJSONValue;
+  LJsonObject : TJSONObject;
+  LParam: array of string;
+  I: Integer;
 begin
-  S:= 'Aku Cinta Pascal';
-  Result:= Length(S);
+  LJsonValue := TJSONObject.ParseJSONValue(AInput);
+  if LJsonValue is TJSONObject then
+    LJsonObject := LJsonValue as TJSONObject else
+    LJsonObject := nil;
+
+  SetLength(LParam, LJsonObject.Count);
+  for I := 0 to Pred(LJsonObject.Count) do
+  begin
+    LParam[I] := LJsonObject.GetValue('param' + IntToStr(I)).Value;
+  end;
+
+  if (LParam[0] = '1') then
+  begin
+    LResult := GetValue(LParam[1], LParam[2]);
+  end else
+  if (LParam[0] = '2') then
+  begin
+    LResult := SetValue(LParam[1], LParam[2]);
+  end else
+  if (LParam[0] = '3') then
+  begin
+    LResult := GetSerial(LParam[1], LParam[2]);
+  end;
+
+  Result:= Length(LResult);
   if (Buffer <> nil) and (Result > 0) then
-    Move(S[1], Buffer^, Result * SizeOf(Char));
+    Move(LResult[1], Buffer^, Result * SizeOf(Char));
 end;
 
-exports GetValue;
-exports SetValue;
-exports GetSerial;
 exports GetText;
 
 begin
