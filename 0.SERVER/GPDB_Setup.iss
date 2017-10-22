@@ -93,7 +93,7 @@ end;
 
 procedure InitializeWizard;
 begin
-  UserPage := CreateInputQueryPage(wpWelcome,
+  UserPage := CreateInputQueryPage(wpUserInfo,
     'Info Perusahaan', 'Info Perusahaan',
     'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
   UserPage.Add('Kode Perusahaan:', False);
