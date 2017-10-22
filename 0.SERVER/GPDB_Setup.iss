@@ -6,6 +6,8 @@
 #define MyAppPublisher "Ngalah Developer"
 #define MyAppURL "http://www.ngadep.com/"
 
+#include "env.iss"
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
