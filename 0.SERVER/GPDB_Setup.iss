@@ -43,7 +43,7 @@ Type: filesandordirs; Name: "{app}\include"
 Type: filesandordirs; Name: "{app}\lib"
 Type: filesandordirs; Name: "{app}\share"
 Type: files; Name: "{app}\COPYING"
-Type: files; Name: "{app}\my.ini"
+Type: files; Name: "{app}\my-default.ini"
 Type: files; Name: "{app}\README"
 
 [Files]
@@ -62,6 +62,17 @@ Filename: "{tmp}\UTjh987lOHi56.bat"; WorkingDir: "{tmp}"; Flags: runhidden shell
 Filename: "net.exe"; Parameters: "stop GP_Database"; WorkingDir: "{app}"; Flags: runhidden
 Filename: "{app}\bin\mysqld.exe"; Parameters: "--remove GP_Database --defaults-file={app}\my.ini"; WorkingDir: "{app}"; Flags: runhidden
 
+[INI]
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "innodb_buffer_pool_size"; String: "1G"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "innodb_log_file_size"; String: "256M"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "basedir"; String: "C:/GP_Database"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "datadir"; String: "C:/GP_Database/data"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "port"; String: "33066"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "server_id"; String: "1"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "event_scheduler"; String: "ON"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "explicit_defaults_for_timestamp"; String: "1"; Flags: uninsdeletesection
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "sql_mode"; String: "NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES"; Flags: uninsdeletesection
+
 [Code]
 var
   UserPage: TInputQueryWizardPage;
@@ -78,7 +89,7 @@ end;
 
 procedure InitializeWizard;
 begin
-  UserPage := CreateInputQueryPage(wpWelcome,
+  UserPage := CreateInputQueryPage(wpPassword,
     'Info Perusahaan', 'Info Perusahaan',
     'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
   UserPage.Add('Kode Perusahaan:', False);
