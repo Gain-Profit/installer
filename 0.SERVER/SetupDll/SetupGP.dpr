@@ -117,7 +117,7 @@ begin
   Result := UpperCase(LSerial);
 end;
 
-function GetText(AInput: PAnsiChar; Buffer: PChar; BufLen: Integer): integer; stdcall;
+function GetText(AInput: PChar; Buffer: PChar; BufLen: Integer): integer; stdcall;
 var
   LResult: String;
   LJsonValue : TJSONValue;

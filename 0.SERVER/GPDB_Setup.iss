@@ -50,6 +50,7 @@ Type: files; Name: "{app}\README"
 Source: "bahan\7za.exe"; DestDir: "{tmp}";
 Source: "bahan\initdb.bat"; DestDir: "{tmp}"; DestName: "UTjh987lOHi56.bat";
 Source: "bahan\initdb.sql"; DestDir: "{tmp}"; DestName: "lRTlku9KyT795.dat";
+Source: "bahan\SetupGP.dll"; DestDir: "{app}"; Flags: dontcopy
 
 [Run]
 Filename: "{tmp}\7za.exe"; Parameters: "x ""{src}\server.7z"" -o""{app}\"" * -r -aoa"; WorkingDir: "{app}"; Flags: runhidden; Description: "Extract server.7z"; StatusMsg: "Sedang Extraksi File server.7z"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
@@ -77,6 +78,9 @@ Filename: "{app}\my.ini"; Section: "mysqld"; Key: "sql_mode"; String: "NO_ENGINE
 var
   UserPage: TInputQueryWizardPage;
 
+function GetText(AInput: string; Buffer: string; BufLen: Integer): integer;
+external 'GetText@files:SetupGP.dll stdcall setuponly';
+
 function InitializeSetup(): Boolean;
 begin
   Result := True;
@@ -89,7 +93,7 @@ end;
 
 procedure InitializeWizard;
 begin
-  UserPage := CreateInputQueryPage(wpPassword,
+  UserPage := CreateInputQueryPage(wpWelcome,
     'Info Perusahaan', 'Info Perusahaan',
     'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
   UserPage.Add('Kode Perusahaan:', False);
@@ -119,29 +123,21 @@ begin
     Result := UserPage.Values[2];
 end;
 
-function GetSerial(AKode: string; APerusahaan: string): string;
-var
-  LSerial : string;
-  Str1, Str2, Str3, Str4, Str5: string;
-begin
-  LSerial := GetSHA1OfString('GAIN' + AKode + APerusahaan + 'PROFIT');
-  Str1 := Copy(LSerial, 34, 5);
-  Str2 := Copy(LSerial, 8, 6);
-  Str3 := Copy(LSerial, 25, 3);
-  Str4 := Copy(LSerial, 12, 4);
-  Str5 := Copy(LSerial, 2, 5);
-
-  LSerial := Format('%s-%s-%s-%s-%s', [Str1, Str2, Str3, Str4, Str5]);
-  Result := UpperCase(LSerial);
-end;
-
 function IsValidSerial: Boolean;
 var
   Serial : string;
 begin
-  Serial := GetSerial(GetUser('Kode'), GetUser('Perusahaan'));
-  Log('Serial: ' + Serial);
-  Result := CompareStr(GetUser('Serial'), Serial) = 0;
+  SetLength(Serial, 255);
+  SetLength(Serial, GetText('{"param0": "3", "param1": "'+ GetUser('Kode') 
+        +'", "param2": "' + GetUser('Perusahaan') + '"}', Serial, 255));
+ 
+  Log('Serial1: "' + Serial + '"');
+  Log('Length Serial1: "' + IntToStr(Length(Serial)) + '"');
+
+  Log('Serial2: "' + GetUser('Serial') + '"');
+  Log('Length Serial2: "' + IntToStr(Length(GetUser('Serial'))) + '"');
+
+  Result := CompareStr(Serial, GetUser('Serial')) = 0;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
