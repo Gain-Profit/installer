@@ -66,6 +66,7 @@ Name: "{group}\{#MyAppName}\Tools\Check Clock"; Filename: "{app}\Tools\CheckCloc
 Name: "{group}\{#MyAppName}\Tools\BackUp"; Filename: "{app}\Tools\dump.exe"
 Name: "{group}\{#MyAppName}\Tools\Desain Laporan"; Filename: "{app}\Tools\FRDesign.exe"
 Name: "{group}\{#MyAppName}\Tools\Lihat Laporan"; Filename: "{app}\Tools\FRShow.exe"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\Akuntansi"; Filename: "{app}\accounting.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Gudang"; Filename: "{app}\gudang.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: desktopicon
