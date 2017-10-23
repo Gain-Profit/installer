@@ -6,8 +6,6 @@
 #define MyAppPublisher "Ngalah Developer"
 #define MyAppURL "http://www.ngadep.com/"
 
-#include "env.iss"
-
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -77,6 +75,8 @@ Filename: "{app}\my.ini"; Section: "mysqld"; Key: "explicit_defaults_for_timesta
 Filename: "{app}\my.ini"; Section: "mysqld"; Key: "sql_mode"; String: "NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES"; Flags: createkeyifdoesntexist
 
 [Code]
+#include "env.iss"
+
 var
   UserPage: TInputQueryWizardPage;
 
@@ -163,5 +163,37 @@ begin
     else
   begin
     WizardForm.ProgressGauge.Style := npbstNormal;
+  end;
+end;
+
+procedure ExecuteSQL(ASQL: string);
+var
+  LOut : string;
+  LCon : string;
+begin
+  Log('SQL: ' + ASQL);
+
+  SetLength(LOut, 255);
+  SetLength(LOut, GetText('{"param0": "2", "param1": "'+ MyCon
+        +'", "param2": "' + ASQL + '"}', LOut, 255));
+ 
+  Log('LOut: "' + LOut + '"');
+end;
+
+procedure InsertDataAwal;
+begin
+  ExecuteSQL(SQL1);
+  ExecuteSQL(SQL2);
+  ExecuteSQL(Format(SQL3, [GetUser('Kode')]));
+  ExecuteSQL(Format(SQL4, [GetUser('Perusahaan'), GetUser('Kode')]));
+
+  SetMarqueeProgress(False);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if ( CurStep = ssDone ) then
+  begin
+    InsertDataAwal;
   end;
 end;
