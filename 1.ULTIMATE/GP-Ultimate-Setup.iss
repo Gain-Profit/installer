@@ -78,36 +78,22 @@ Name: "{commondesktop}\Penggajian"; Filename: "{app}\payroll.exe"; Tasks: deskto
 #include "env.iss"
 
 var
+  ConnectionPage: TInputQueryWizardPage;
   UserPage: TInputQueryWizardPage;
 
 function GetText(AInput: string; Buffer: string; BufLen: Integer): integer;
 external 'GetText@files:SetupGP.dll stdcall setuponly';
 
-procedure ExecuteSQL(ASQL: string; isOpen: Boolean);
-var
-  LOut : string;
-  LLenBuf : Integer;
-begin
-  Log('SQL: ' + ASQL);
-
-  SetLength(LOut, 255);
-  if (isOpen) then
-  begin
-    LLenBuf := GetText('{"param0": "1", "param1": "'+ MyCon
-        +'", "param2": "' + ASQL + '"}', LOut, 255)
-  end else
-  begin
-    LLenBuf := GetText('{"param0": "2", "param1": "'+ MyCon
-        +'", "param2": "' + ASQL + '"}', LOut, 255)
-  end;
-
-  SetLength(LOut, LLenBuf);
- 
-  Log('LOut: "' + LOut + '"');
-end;
-
 procedure InitializeWizard;
 begin
+  ConnectionPage := CreateInputQueryPage(wpPassword,
+    'Koneksi Database', 'Masukkan Nama/IP Server Database',
+    'Isi dengan localhost jika Server Database berada dalam satu Komputer dengan Aplikasi. ' +
+    'Selain itu, isikan alamat IP Server Database');
+  ConnectionPage.Add('Nama/IP Server:', False);
+  
+  ConnectionPage.Values[0] := GetPreviousData('Server', 'localhost');
+  
   UserPage := CreateInputQueryPage(wpUserInfo,
     'Info Perusahaan', 'Info Perusahaan',
     'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
@@ -115,17 +101,22 @@ begin
   UserPage.Add('Perusahaan:', False);
   UserPage.Add('Kode Serial:', False);
 
-  UserPage.Values[0] := GetPreviousData('Kode', '');
-  UserPage.Values[1] := GetPreviousData('Perusahaan', '');
   UserPage.Values[2] := GetPreviousData('Serial', '');
+
+  UserPage.Edits[0].Enabled := False;
+  UserPage.Edits[1].Enabled := False;
 end;
 
 
 procedure RegisterPreviousData(PreviousDataKey: Integer);
 begin
-  SetPreviousData(PreviousDataKey, 'Kode', UserPage.Values[0]);
-  SetPreviousData(PreviousDataKey, 'Perusahaan', UserPage.Values[1]);
+  SetPreviousData(PreviousDataKey, 'Server', ConnectionPage.Values[0]);
   SetPreviousData(PreviousDataKey, 'Serial', UserPage.Values[2]);
+end;
+
+function GetHost: String;
+begin
+  Result := ConnectionPage.Values[0];
 end;
 
 function GetUser(Param: String): String;
@@ -136,6 +127,56 @@ begin
     Result := UserPage.Values[1]
   else if Param = 'Serial' then
     Result := UserPage.Values[2];
+end;
+
+function OpenSQL(ASQL: string): string;
+var
+  LOut : string;
+begin
+  Log('SQL: ' + ASQL);
+
+  SetLength(LOut, 255);
+  SetLength(LOut, GetText('{"param0": "1", "param1": "'+ Format(MyCon, [GetHost])
+        +'", "param2": "' + ASQL + '"}', LOut, 255));
+ 
+  Log('LOut: "' + LOut + '"');
+  Result := LOut;
+end;
+
+function IsConnected: string;
+var
+  LKode, LNama: string;
+  LData, LStatus, LCOunt: string;
+begin
+  LData := OpenSQL(SQL1);
+  
+  LStatus := Copy(LData, 12, 1);
+  Log('LStatus: "' + LStatus + '"');
+  
+  if (LStatus = '1') then
+  begin
+    LCount := Copy(LData, 24, 1); 
+    Log('LCount: "' + LCount + '"');
+  
+    if (LCount = '1') then
+    begin
+      LKode := Copy(LData, 53, 5);
+      Log('LKode: "' + LKode + '"');
+    
+      LNama := Copy(LData, 76, Length(LData) - 79);
+      Log('LNama: "' + LNama + '"');
+
+      UserPage.Values[0] := LKode;
+      UserPage.Values[1] := LNama;
+      Result := '0';
+    end else
+    begin
+      Result := 'Tidak Ada Perusahaan Yang Terdaftar';
+    end;
+  end else
+  begin
+    Result := Copy(LData, 24, Length(LData) - 25);;
+  end;  
 end;
 
 function IsValidSerial: Boolean;
@@ -151,14 +192,25 @@ begin
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  LHasil : string;
 begin
   Result := True;
   
+  if CurPageID = ConnectionPage.ID then
+  begin
+    LHasil := IsConnected
+    Log('LHasil: "' + LHasil + '"');
+    Result := LHasil = '0';
+    if not Result then
+      MsgBox('Tidak Dapat Terhubung ke Server' + #13#10 + LHasil, mbError, MB_OK);
+  end else
   if CurPageID = UserPage.ID then
   begin
     Result := IsValidSerial;
     if not Result then
       MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
   end;
+  
 end;
 
