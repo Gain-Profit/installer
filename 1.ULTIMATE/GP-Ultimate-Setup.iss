@@ -174,7 +174,12 @@ begin
   '{ykxevxuloz' + #13#10 + '{ykxevxuloz';
 
   SaveStringToFile(ExpandConstant('{app}\tools\koneksi.cbCon'), LKoneksi, False);
-  SaveStringToFile(ExpandConstant('{app}\tools\SERIAL.reg'), GetUser('Serial'), False);
+end;
+
+procedure SimpanSerial;
+begin
+  SetIniString('Install', 'Serial' + GetUser('Kode'), GetUser('Serial'), 
+    ExpandConstant('{commonappdata}\Gain Profit\gain.ini'));
 end;
 
 function OpenSQL(ASQL: string): string;
@@ -265,6 +270,7 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if ( CurStep = ssPostInstall ) then
   begin
+    SimpanSerial;
     SimpanKoneksi;
     if (IsTaskSelected('autobackup')) then
       SimpanKoneksiRoot;
