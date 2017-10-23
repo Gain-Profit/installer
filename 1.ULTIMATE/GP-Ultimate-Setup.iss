@@ -32,6 +32,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "autobackup"; Description: "Install Auto Backup"; Flags: unchecked
 
 [Dirs]
 Name: "{commonappdata}\Gain Profit"
@@ -40,21 +41,21 @@ Name: "{app}\tools"
 Name: "{app}\tools\skins"
 
 [Files]
-Source: "bahan\other\SetupGP.dll";    DestDir: "{app}";             Flags: dontcopy
-Source: "bahan\accounting.exe";       DestDir: "{app}";             Flags: ignoreversion
-Source: "bahan\gudang.exe";           DestDir: "{app}";             Flags: ignoreversion
-Source: "bahan\pos_server.exe";       DestDir: "{app}";             Flags: ignoreversion
-Source: "bahan\kasir.exe";            DestDir: "{app}";             Flags: ignoreversion
-Source: "bahan\payroll.exe";          DestDir: "{app}";             Flags: ignoreversion
-Source: "bahan\laporan\*";            DestDir: "{app}\laporan";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "bahan\tools\koneksi.exe";    DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\CheckClock.exe"; DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\dump.exe";       DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\mysqldump.exe";  DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\gzip.exe";       DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\FRDesign.exe";   DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\FRShow.exe";     DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\Skins\*";        DestDir: "{app}\tools\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "bahan\other\SetupGP.dll"; DestDir: "{app}"; Flags: dontcopy
+Source: "bahan\accounting.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bahan\gudang.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bahan\pos_server.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bahan\kasir.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bahan\payroll.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bahan\laporan\*"; DestDir: "{app}\laporan"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "bahan\tools\koneksi.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "bahan\tools\CheckClock.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "bahan\tools\dump.exe"; DestDir: "{app}\tools"; Flags: ignoreversion; Tasks: autobackup
+Source: "bahan\tools\mysqldump.exe"; DestDir: "{app}\tools"; Flags: ignoreversion; Tasks: autobackup
+Source: "bahan\tools\gzip.exe"; DestDir: "{app}\tools"; Flags: ignoreversion; Tasks: autobackup
+Source: "bahan\tools\FRDesign.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "bahan\tools\FRShow.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "bahan\tools\Skins\*"; DestDir: "{app}\tools\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}\Akuntansi"; Filename: "{app}\accounting.exe"
@@ -79,6 +80,12 @@ Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "akun"; Key: "kd_peru
 Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "gudang"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
 Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "toko"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
 Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "kasir"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
+
+[Registry]
+Root: "HKLM"; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "GPDump"; ValueData: """{app}\Tools\dump.exe"""; Flags: createvalueifdoesntexist uninsdeletekey; Tasks: autobackup
+
+[Run]
+Filename: "{app}\tools\dump.exe"; WorkingDir: "{app}\tools"; Flags: nowait runminimized; Description: "Menjalankan Auto Backup"; Tasks: autobackup
 
 [Code]
 #include "env.iss"
@@ -150,7 +157,7 @@ var
   LKoneksi: string;
 begin
   LKoneksi := Kunci(GetHost, 6) + #13#10 + 'vxuloz' + #13#10 + '996<<' + #13#10 + 
-  'xuuz' + #13#10 + 'MFoteVx6l'zeiktzkxejgzghgyk';
+  'xuuz' + #13#10 + 'MFoteVx6l''zeiktzkxejgzghgyk';
 
   SaveStringToFile(ExpandConstant('{app}\tools\koneksi_root.cbCon'), LKoneksi , False);
 end;
@@ -254,5 +261,7 @@ begin
   if ( CurStep = ssPostInstall ) then
   begin
     SimpanKoneksi;
+    if (IsTaskSelected('autobackup')) then
+      SimpanKoneksiRoot;
   end;
 end;
