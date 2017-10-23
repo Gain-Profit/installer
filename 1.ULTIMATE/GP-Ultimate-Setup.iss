@@ -173,7 +173,8 @@ begin
   LKoneksi := Kunci(GetHost, 6) + #13#10 + 'vxuloz' + #13#10 + '996<<' + #13#10 + 
   '{ykxevxuloz' + #13#10 + '{ykxevxuloz';
 
-  SaveStringToFile(ExpandConstant('{app}\tools\koneksi.cbCon'), LKoneksi , False);
+  SaveStringToFile(ExpandConstant('{app}\tools\koneksi.cbCon'), LKoneksi, False);
+  SaveStringToFile(ExpandConstant('{app}\tools\SERIAL.reg'), GetUser('Serial'), False);
 end;
 
 function OpenSQL(ASQL: string): string;
