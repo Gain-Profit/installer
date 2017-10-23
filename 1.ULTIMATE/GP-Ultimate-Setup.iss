@@ -34,6 +34,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Dirs]
+Name: "{commonappdata}\Gain Profit"
 Name: "{app}\laporan"
 Name: "{app}\tools"
 Name: "{app}\tools\skins"
@@ -47,7 +48,6 @@ Source: "bahan\kasir.exe";            DestDir: "{app}";             Flags: ignor
 Source: "bahan\payroll.exe";          DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\laporan\*";            DestDir: "{app}\laporan";     Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "bahan\tools\koneksi.exe";    DestDir: "{app}\tools";       Flags: ignoreversion
-Source: "bahan\tools\koneksi.cbCon";  DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\CheckClock.exe"; DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\dump.exe";       DestDir: "{app}\tools";       Flags: ignoreversion
 Source: "bahan\tools\mysqldump.exe";  DestDir: "{app}\tools";       Flags: ignoreversion
@@ -73,6 +73,12 @@ Name: "{commondesktop}\Gudang"; Filename: "{app}\gudang.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Kasir"; Filename: "{app}\kasir.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Penggajian"; Filename: "{app}\payroll.exe"; Tasks: desktopicon
+
+[INI]
+Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "akun"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
+Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "gudang"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
+Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "toko"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
+Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "kasir"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
 
 [Code]
 #include "env.iss"
@@ -107,7 +113,6 @@ begin
   UserPage.Edits[1].Enabled := False;
 end;
 
-
 procedure RegisterPreviousData(PreviousDataKey: Integer);
 begin
   SetPreviousData(PreviousDataKey, 'Server', ConnectionPage.Values[0]);
@@ -127,6 +132,27 @@ begin
     Result := UserPage.Values[1]
   else if Param = 'Serial' then
     Result := UserPage.Values[2];
+end;
+
+function Kunci(const s: string; CryptInt: Integer): string;
+var
+  i: integer;
+  s2: string;
+begin
+  if not (Length(s) = 0) then
+    for i := 1 to Length(s) do
+      s2 := s2 + Chr(Ord(s[i]) + CrypTint);
+  Result := s2;
+end;
+
+procedure SimpanKoneksi;
+var
+  LKoneksi : string;
+begin
+  LKoneksi := Kunci(GetHost, 6) + #13#10 + 'vxuloz' + #13#10 + '996<<' + #13#10 + 
+  '{ykxevxuloz' + #13#10 + '{ykxevxuloz';
+
+  SaveStringToFile(ExpandConstant('{app}\tools\koneksi.cbCon'), LKoneksi , False);
 end;
 
 function OpenSQL(ASQL: string): string;
@@ -211,6 +237,12 @@ begin
     if not Result then
       MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
   end;
-  
 end;
 
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if ( CurStep = ssPostInstall ) then
+  begin
+    SimpanKoneksi;
+  end;
+end;
