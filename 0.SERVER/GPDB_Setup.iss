@@ -66,8 +66,8 @@ Filename: "net.exe"; Parameters: "stop GP_Database"; WorkingDir: "{app}"; Flags:
 Filename: "{app}\bin\mysqld.exe"; Parameters: "--remove GP_Database --defaults-file={app}\my.ini"; WorkingDir: "{app}"; Flags: runhidden
 
 [INI]
-Filename: "{app}\my.ini"; Section: "mysqld"; Key: "innodb_buffer_pool_size"; String: "1G"; Flags: createkeyifdoesntexist
-Filename: "{app}\my.ini"; Section: "mysqld"; Key: "innodb_log_file_size"; String: "256M"; Flags: createkeyifdoesntexist
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "innodb_buffer_pool_size"; String: "512M"; Flags: createkeyifdoesntexist
+Filename: "{app}\my.ini"; Section: "mysqld"; Key: "innodb_log_file_size"; String: "128M"; Flags: createkeyifdoesntexist
 Filename: "{app}\my.ini"; Section: "mysqld"; Key: "basedir"; String: "C:/GP_Database"; Flags: createkeyifdoesntexist
 Filename: "{app}\my.ini"; Section: "mysqld"; Key: "datadir"; String: "C:/GP_Database/data"; Flags: createkeyifdoesntexist
 Filename: "{app}\my.ini"; Section: "mysqld"; Key: "port"; String: "33066"; Flags: createkeyifdoesntexist
