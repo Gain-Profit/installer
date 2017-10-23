@@ -82,10 +82,14 @@ Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "toko"; Key: "kd_peru
 Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "kasir"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
 
 [Registry]
-Root: "HKLM"; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "GPDump"; ValueData: """{app}\Tools\dump.exe"""; Flags: createvalueifdoesntexist uninsdeletekey; Tasks: autobackup
+Root: "HKLM"; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "GPDump"; ValueData: """{app}\Tools\dump.exe"""; Flags: createvalueifdoesntexist uninsdeletevalue; Tasks: autobackup
 
 [Run]
-Filename: "{app}\tools\dump.exe"; WorkingDir: "{app}\tools"; Flags: nowait runminimized; Description: "Menjalankan Auto Backup"; Tasks: autobackup
+Filename: "{app}\tools\dump.exe"; WorkingDir: "{app}\tools"; Flags: nowait; Description: "Menjalankan Auto Backup"; Tasks: autobackup
+
+[InstallDelete]
+Type: files; Name: "{app}\tools\koneksi.cbCon";
+Type: files; Name: "{app}\tools\koneksi_root.cbCon"; Tasks: autobackup
 
 [Code]
 #include "env.iss"
