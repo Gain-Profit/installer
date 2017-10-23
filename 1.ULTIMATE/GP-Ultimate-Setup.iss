@@ -40,7 +40,7 @@ Name: "{app}\tools"
 Name: "{app}\tools\skins"
 
 [Files]
-Source: "bahan\other\SetupGP.dll";    DestDir: "{app}"; Flags: dontcopy
+Source: "bahan\other\SetupGP.dll";    DestDir: "{app}";             Flags: dontcopy
 Source: "bahan\accounting.exe";       DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\gudang.exe";           DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\pos_server.exe";       DestDir: "{app}";             Flags: ignoreversion
@@ -143,6 +143,16 @@ begin
     for i := 1 to Length(s) do
       s2 := s2 + Chr(Ord(s[i]) + CrypTint);
   Result := s2;
+end;
+
+procedure SimpanKoneksiRoot;
+var
+  LKoneksi: string;
+begin
+  LKoneksi := Kunci(GetHost, 6) + #13#10 + 'vxuloz' + #13#10 + '996<<' + #13#10 + 
+  'xuuz' + #13#10 + 'MFoteVx6l'zeiktzkxejgzghgyk';
+
+  SaveStringToFile(ExpandConstant('{app}\tools\koneksi_root.cbCon'), LKoneksi , False);
 end;
 
 procedure SimpanKoneksi;
