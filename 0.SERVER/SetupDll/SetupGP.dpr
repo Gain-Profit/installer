@@ -39,10 +39,12 @@ begin
 
     try
       LQuery.Open;
-      LQuery.First;
 
       LRoot := TJSONObject.Create;
       LRoot.AddPair('status', '1');
+      LRoot.AddPair('count', IntToStr(LQuery.RecordCount));
+
+      LQuery.First;
       LArray := TJSONArray.Create;
 
       for LRow := 0 to Pred(LQuery.RecordCount) do
@@ -62,7 +64,7 @@ begin
       LResult := LRoot.ToString;
       LRoot.Free;
     except on E: Exception do
-      LREsult:= '{"status": "0", "error": "' + E.Message +'"}';
+      LREsult:= '{"status":"0","error":"' + E.Message +'"}';
     end;
 
   finally
@@ -88,10 +90,10 @@ begin
 
     try
       LQuery.ExecSQL;
-      LREsult:= '{"status": "1", "data": "success"}';
+      LREsult:= '{"status":"1","data":"success"}';
 
     except on E: Exception do
-      LREsult:= '{"status": "0", "error": "' + E.Message +'"}';
+      LREsult:= '{"status":"0","error":"' + E.Message +'"}';
     end;
 
   finally
