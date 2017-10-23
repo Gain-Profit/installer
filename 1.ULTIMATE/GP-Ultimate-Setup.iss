@@ -39,6 +39,7 @@ Name: "{app}\tools"
 Name: "{app}\tools\skins"
 
 [Files]
+Source: "bahan\other\SetupGP.dll";    DestDir: "{app}"; Flags: dontcopy
 Source: "bahan\accounting.exe";       DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\gudang.exe";           DestDir: "{app}";             Flags: ignoreversion
 Source: "bahan\pos_server.exe";       DestDir: "{app}";             Flags: ignoreversion
@@ -72,4 +73,92 @@ Name: "{commondesktop}\Gudang"; Filename: "{app}\gudang.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Kasir"; Filename: "{app}\kasir.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Penggajian"; Filename: "{app}\payroll.exe"; Tasks: desktopicon
+
+[Code]
+#include "env.iss"
+
+var
+  UserPage: TInputQueryWizardPage;
+
+function GetText(AInput: string; Buffer: string; BufLen: Integer): integer;
+external 'GetText@files:SetupGP.dll stdcall setuponly';
+
+procedure ExecuteSQL(ASQL: string; isOpen: Boolean);
+var
+  LOut : string;
+  LLenBuf : Integer;
+begin
+  Log('SQL: ' + ASQL);
+
+  SetLength(LOut, 255);
+  if (isOpen) then
+  begin
+    LLenBuf := GetText('{"param0": "1", "param1": "'+ MyCon
+        +'", "param2": "' + ASQL + '"}', LOut, 255)
+  end else
+  begin
+    LLenBuf := GetText('{"param0": "2", "param1": "'+ MyCon
+        +'", "param2": "' + ASQL + '"}', LOut, 255)
+  end;
+
+  SetLength(LOut, LLenBuf);
+ 
+  Log('LOut: "' + LOut + '"');
+end;
+
+procedure InitializeWizard;
+begin
+  UserPage := CreateInputQueryPage(wpUserInfo,
+    'Info Perusahaan', 'Info Perusahaan',
+    'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
+  UserPage.Add('Kode Perusahaan:', False);
+  UserPage.Add('Perusahaan:', False);
+  UserPage.Add('Kode Serial:', False);
+
+  UserPage.Values[0] := GetPreviousData('Kode', '');
+  UserPage.Values[1] := GetPreviousData('Perusahaan', '');
+  UserPage.Values[2] := GetPreviousData('Serial', '');
+end;
+
+
+procedure RegisterPreviousData(PreviousDataKey: Integer);
+begin
+  SetPreviousData(PreviousDataKey, 'Kode', UserPage.Values[0]);
+  SetPreviousData(PreviousDataKey, 'Perusahaan', UserPage.Values[1]);
+  SetPreviousData(PreviousDataKey, 'Serial', UserPage.Values[2]);
+end;
+
+function GetUser(Param: String): String;
+begin
+  if Param = 'Kode' then
+    Result := UserPage.Values[0]
+  else if Param = 'Perusahaan' then
+    Result := UserPage.Values[1]
+  else if Param = 'Serial' then
+    Result := UserPage.Values[2];
+end;
+
+function IsValidSerial: Boolean;
+var
+  Serial : string;
+begin
+  SetLength(Serial, 255);
+  SetLength(Serial, GetText('{"param0": "3", "param1": "'+ GetUser('Kode') 
+        +'", "param2": "' + GetUser('Perusahaan') + '"}', Serial, 255));
+ 
+  Log('Serial: "' + Serial + '"');
+  Result := CompareStr(Serial, GetUser('Serial')) = 0;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  
+  if CurPageID = UserPage.ID then
+  begin
+    Result := IsValidSerial;
+    if not Result then
+      MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
+  end;
+end;
 
