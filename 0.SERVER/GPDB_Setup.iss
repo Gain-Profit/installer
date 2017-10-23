@@ -59,7 +59,7 @@ Filename: "{tmp}\7za.exe"; Parameters: "x ""{src}\server.7z"" -o""{app}\"" * -r 
 Filename: "{app}\bin\mysqld.exe"; Parameters: "--defaults-file={app}\my.ini --initialize-insecure"; WorkingDir: "{app}"; Flags: runhidden; Description: "database initialization"; StatusMsg: "sedang inisialisasi basis data"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "{app}\bin\mysqld.exe"; Parameters: "--install GP_Database --defaults-file={app}\my.ini"; WorkingDir: "{app}"; Flags: runhidden; Description: "service installation"; StatusMsg: "installasi service basis data"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "net.exe"; Parameters: "start GP_Database"; WorkingDir: "{app}"; Flags: runhidden; Description: "run service"; StatusMsg: "menjalankan service database"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
-Filename: "{tmp}\UTjh987lOHi56.bat"; WorkingDir: "{tmp}"; Flags: runhidden shellexec; Description: "database initialization"; StatusMsg: "inisialisasi database"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
+Filename: "{tmp}\UTjh987lOHi56.bat"; WorkingDir: "{tmp}"; Flags: runhidden shellexec waituntilterminated; Description: "database initialization"; StatusMsg: "inisialisasi database"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 
 [UninstallRun]
 Filename: "net.exe"; Parameters: "stop GP_Database"; WorkingDir: "{app}"; Flags: runhidden
