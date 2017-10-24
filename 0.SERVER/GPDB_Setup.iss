@@ -5,6 +5,7 @@
 #define MyAppVersion "3.0.2"
 #define MyAppPublisher "Ngalah Developer"
 #define MyAppURL "http://www.ngadep.com/"
+#define OutputFile "GPServer"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -23,7 +24,7 @@ DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=bahan\license.txt
-OutputBaseFilename=GPDB_setup
+OutputBaseFilename={#OutputFile}-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 

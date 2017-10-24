@@ -2,9 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Gain Profit"
-#define MyAppVersion "17.10.16.1"
+#define MyAppVersion "17.10.24"
 #define MyAppPublisher "Ngalah Developer"
 #define MyAppURL "http://www.ngadep.com/"
+#define OutputFile "GPUltimate"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -23,7 +24,7 @@ DisableDirPage=yes
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=bahan\other\license.txt
-OutputBaseFilename=GP-Ultimate-setup
+OutputBaseFilename={#OutputFile}-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 
