@@ -68,7 +68,7 @@ Name: "{group}\{#MyAppName}\Tools\Check Clock"; Filename: "{app}\Tools\CheckCloc
 Name: "{group}\{#MyAppName}\Tools\BackUp"; Filename: "{app}\Tools\dump.exe"
 Name: "{group}\{#MyAppName}\Tools\Desain Laporan"; Filename: "{app}\Tools\FRDesign.exe"
 Name: "{group}\{#MyAppName}\Tools\Lihat Laporan"; Filename: "{app}\Tools\FRShow.exe"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{group}\{#MyAppName}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\Akuntansi"; Filename: "{app}\accounting.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Gudang"; Filename: "{app}\gudang.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: desktopicon
@@ -87,7 +87,7 @@ Root: "HKLM"; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType
 [Run]
 Filename: "{app}\tools\dump.exe"; WorkingDir: "{app}\tools"; Flags: nowait; Description: "Menjalankan Auto Backup"; Tasks: autobackup
 
-[InstallDelete]
+[UninstallDelete]
 Type: files; Name: "{app}\tools\koneksi.cbCon";
 Type: files; Name: "{app}\tools\koneksi_root.cbCon"; Tasks: autobackup
 
@@ -118,8 +118,6 @@ begin
   UserPage.Add('Perusahaan:', False);
   UserPage.Add('Kode Serial:', False);
 
-  UserPage.Values[2] := GetPreviousData('Serial', '');
-
   UserPage.Edits[0].Enabled := False;
   UserPage.Edits[1].Enabled := False;
 end;
@@ -127,7 +125,6 @@ end;
 procedure RegisterPreviousData(PreviousDataKey: Integer);
 begin
   SetPreviousData(PreviousDataKey, 'Server', ConnectionPage.Values[0]);
-  SetPreviousData(PreviousDataKey, 'Serial', UserPage.Values[2]);
 end;
 
 function GetHost: String;
@@ -176,12 +173,6 @@ begin
   SaveStringToFile(ExpandConstant('{app}\tools\koneksi.cbCon'), LKoneksi, False);
 end;
 
-procedure SimpanSerial;
-begin
-  SetIniString('Install', 'Serial' + GetUser('Kode'), GetUser('Serial'), 
-    ExpandConstant('{commonappdata}\Gain Profit\gain.ini'));
-end;
-
 function OpenSQL(ASQL: string): string;
 var
   LOut : string;
@@ -194,6 +185,12 @@ begin
  
   Log('LOut: "' + LOut + '"');
   Result := LOut;
+end;
+
+function GetSerialFromGainIniFile : string;
+begin
+  Result := GetIniString('Install', 'Serial' + GetUser('Kode'), '', 
+            ExpandConstant('{commonappdata}\Gain Profit\gain.ini'));
 end;
 
 function IsConnected: string;
@@ -221,6 +218,8 @@ begin
 
       UserPage.Values[0] := LKode;
       UserPage.Values[1] := LNama;
+      UserPage.Values[2] := GetSerialFromGainIniFile;
+
       Result := '0';
     end else
     begin
@@ -270,7 +269,6 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if ( CurStep = ssPostInstall ) then
   begin
-    SimpanSerial;
     SimpanKoneksi;
     if (IsTaskSelected('autobackup')) then
       SimpanKoneksiRoot;

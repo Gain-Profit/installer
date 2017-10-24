@@ -137,6 +137,12 @@ begin
   Result := CompareStr(Serial, GetUser('Serial')) = 0;
 end;
 
+procedure SimpanSerial;
+begin
+  SetIniString('Install', 'Serial' + GetUser('Kode'), GetUser('Serial'), 
+    ExpandConstant('{commonappdata}\Gain Profit\gain.ini'));
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
@@ -144,7 +150,8 @@ begin
   if CurPageID = UserPage.ID then
   begin
     Result := IsValidSerial;
-    if not Result then
+    if Result then
+      SimpanSerial else
       MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
   end;
 end;
