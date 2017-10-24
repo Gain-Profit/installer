@@ -36,9 +36,9 @@ Name: "autobackup"; Description: "Install Auto Backup"; Flags: unchecked
 
 [Dirs]
 Name: "{commonappdata}\Gain Profit"
-Name: "{app}\laporan"
-Name: "{app}\tools"
-Name: "{app}\tools\skins"
+Name: "{app}\laporan"; Flags: uninsalwaysuninstall
+Name: "{app}\tools"; Flags: uninsalwaysuninstall
+Name: "{app}\tools\skins"; Flags: uninsalwaysuninstall
 
 [Files]
 Source: "bahan\other\SetupGP.dll"; DestDir: "{app}"; Flags: dontcopy
@@ -58,17 +58,17 @@ Source: "bahan\tools\FRShow.exe"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "bahan\tools\Skins\*"; DestDir: "{app}\tools\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#MyAppName}\Akuntansi"; Filename: "{app}\accounting.exe"
-Name: "{group}\{#MyAppName}\Gudang"; Filename: "{app}\gudang.exe"
-Name: "{group}\{#MyAppName}\Server Pos"; Filename: "{app}\pos_server.exe"
-Name: "{group}\{#MyAppName}\Kasir"; Filename: "{app}\kasir.exe"
-Name: "{group}\{#MyAppName}\Penggajian"; Filename: "{app}\payroll.exe"
-Name: "{group}\{#MyAppName}\Tools\Koneksi"; Filename: "{app}\Tools\koneksi.exe"
-Name: "{group}\{#MyAppName}\Tools\Check Clock"; Filename: "{app}\Tools\CheckClock.exe"
-Name: "{group}\{#MyAppName}\Tools\BackUp"; Filename: "{app}\Tools\dump.exe"
-Name: "{group}\{#MyAppName}\Tools\Desain Laporan"; Filename: "{app}\Tools\FRDesign.exe"
-Name: "{group}\{#MyAppName}\Tools\Lihat Laporan"; Filename: "{app}\Tools\FRShow.exe"
-Name: "{group}\{#MyAppName}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{group}\Akuntansi"; Filename: "{app}\accounting.exe"
+Name: "{group}\Gudang"; Filename: "{app}\gudang.exe"
+Name: "{group}\Server Pos"; Filename: "{app}\pos_server.exe"
+Name: "{group}\Kasir"; Filename: "{app}\kasir.exe"
+Name: "{group}\Penggajian"; Filename: "{app}\payroll.exe"
+Name: "{group}\Tools\Koneksi"; Filename: "{app}\Tools\koneksi.exe"
+Name: "{group}\Tools\Check Clock"; Filename: "{app}\Tools\CheckClock.exe"
+Name: "{group}\Tools\BackUp"; Filename: "{app}\Tools\dump.exe"
+Name: "{group}\Tools\Desain Laporan"; Filename: "{app}\Tools\FRDesign.exe"
+Name: "{group}\Tools\Lihat Laporan"; Filename: "{app}\Tools\FRShow.exe"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\Akuntansi"; Filename: "{app}\accounting.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Gudang"; Filename: "{app}\gudang.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: desktopicon
@@ -113,7 +113,7 @@ begin
   
   UserPage := CreateInputQueryPage(wpUserInfo,
     'Info Perusahaan', 'Info Perusahaan',
-    'Isikan Kode dan Nama Perusahaan Serta Kode Serial, Kemudian Klik Next');
+    'Isikan Kode Serial, Kemudian Klik Next');
   UserPage.Add('Kode Perusahaan:', False);
   UserPage.Add('Perusahaan:', False);
   UserPage.Add('Kode Serial:', False);
