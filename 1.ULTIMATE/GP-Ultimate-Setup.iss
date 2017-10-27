@@ -76,12 +76,6 @@ Name: "{commondesktop}\Server Pos"; Filename: "{app}\pos_server.exe"; Tasks: des
 Name: "{commondesktop}\Kasir"; Filename: "{app}\kasir.exe"; Tasks: desktopicon
 Name: "{commondesktop}\Penggajian"; Filename: "{app}\payroll.exe"; Tasks: desktopicon
 
-[INI]
-Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "akun"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
-Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "gudang"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
-Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "toko"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
-Filename: "{commonappdata}\Gain Profit\gain.ini"; Section: "kasir"; Key: "kd_perusahaan"; String: "{code:GetUser|Kode}"
-
 [Registry]
 Root: "HKLM"; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "GPDump"; ValueData: """{app}\Tools\dump.exe"""; Flags: createvalueifdoesntexist uninsdeletevalue; Tasks: autobackup
 
@@ -188,10 +182,16 @@ begin
   Result := LOut;
 end;
 
-function GetSerialFromGainIniFile : string;
+function GetSerialFromRegistry : string;
+var
+  Serial : String;
 begin
-  Result := GetIniString('Install', 'Serial' + GetUser('Kode'), '', 
-            ExpandConstant('{commonappdata}\Gain Profit\gain.ini'));
+  Result := '';
+  if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Ngadep\GainProfit\Serial',
+     'Serial' + GetUser('Kode'), Serial) then
+  begin
+    Result := Serial;
+  end;
 end;
 
 function IsConnected: string;
@@ -219,7 +219,7 @@ begin
 
       UserPage.Values[0] := LKode;
       UserPage.Values[1] := LNama;
-      UserPage.Values[2] := GetSerialFromGainIniFile;
+      UserPage.Values[2] := GetSerialFromRegistry;
 
       Result := '0';
     end else
