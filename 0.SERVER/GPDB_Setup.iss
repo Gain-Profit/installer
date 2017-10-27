@@ -75,6 +75,11 @@ Filename: "{app}\my.ini"; Section: "mysqld"; Key: "event_scheduler"; String: "ON
 Filename: "{app}\my.ini"; Section: "mysqld"; Key: "explicit_defaults_for_timestamp"; String: "1"; Flags: createkeyifdoesntexist
 Filename: "{app}\my.ini"; Section: "mysqld"; Key: "sql_mode"; String: "NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES"; Flags: createkeyifdoesntexist
 
+[Registry]
+Root: "HKLM"; Subkey: "SOFTWARE\Ngadep";
+Root: "HKLM"; Subkey: "SOFTWARE\Ngadep\GainProfit";
+Root: "HKLM"; Subkey: "SOFTWARE\Ngadep\GainProfit\Serial"; ValueType: string; ValueName: "Serial{code:GetUser|Kode}"; ValueData: "{code:GetUser|Serial}";
+
 [Code]
 #include "env.iss"
 
@@ -138,12 +143,6 @@ begin
   Result := CompareStr(Serial, GetUser('Serial')) = 0;
 end;
 
-procedure SimpanSerial;
-begin
-  SetIniString('Install', 'Serial' + GetUser('Kode'), GetUser('Serial'), 
-    ExpandConstant('{commonappdata}\Gain Profit\gain.ini'));
-end;
-
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
@@ -151,8 +150,7 @@ begin
   if CurPageID = UserPage.ID then
   begin
     Result := IsValidSerial;
-    if Result then
-      SimpanSerial else
+    if not Result then
       MsgBox('Kode Serial Tidak Sesuai', mbError, MB_OK);
   end;
 end;
