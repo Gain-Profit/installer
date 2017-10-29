@@ -92,9 +92,17 @@ external 'GetText@files:SetupGP.dll stdcall setuponly';
 function InitializeSetup(): Boolean;
 begin
   Result := True;
+  if (GetPreviousData('Kode', '') <> '') then
+  begin
+   MsgBox('Tidak Bisa Melakukan Installasi,' + #13#10 + 
+   'Database sudah diinstall di Komputer ini', mbError, MB_OK);
+   Result := False;
+  End;
+
   if not FileExists(ExpandConstant('{src}\server.7z')) then
   begin
-   MsgBox('Tidak Bisa Melakukan Installasi, File "server.7z" Tidak Ditemukan', mbError, MB_OK);
+   MsgBox('Tidak Bisa Melakukan Installasi,' + #13#10 + 
+   'File "server.7z" Tidak Ditemukan', mbError, MB_OK);
    Result := False;
   End;
 end;
